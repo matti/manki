@@ -5,7 +5,7 @@ describe Manki do
     expect(Manki::VERSION).not_to be nil
   end
 
-  it 'does something useful' do
-    expect(false).to eq(true)
+  it 'can be instantiated' do
+    expect(Manki.new).to be_a(Manki)
   end
 end

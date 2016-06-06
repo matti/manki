@@ -1,3 +1,3 @@
-module Manki
+class Manki
   VERSION = "0.0.1"
 end
