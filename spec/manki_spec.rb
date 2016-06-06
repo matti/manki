@@ -5,7 +5,40 @@ describe Manki do
     expect(Manki::VERSION).not_to be nil
   end
 
-  it 'can be instantiated' do
-    expect(Manki.new).to be_a(Manki)
+  describe 'instantiation' do
+    it 'requires a hash of options' do
+      expect(Manki.new({})).to be_a(Manki)
+    end
+  end
+
+  describe 'instance' do
+    before(:each) do
+      @m = Manki.new({
+        host: 'http://example.com'
+      })
+    end
+
+    describe 'get' do
+      it 'performs get' do
+        @m.get "/"
+      end
+
+      it 'sets html' do
+        @m.get "/"
+        expect(@m.html).to include "<h1>Example Domain"
+      end
+    end
+
+    describe 'html' do
+      before(:each) do
+        @m = Manki.new({
+          host: 'http://example.com'
+        })
+      end
+
+      it 'is nil' do
+        expect(@m.html).to be(nil)
+      end
+    end
   end
 end
