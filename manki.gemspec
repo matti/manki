@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Matti Paksula"]
   spec.email         = ["matti.paksula@iki.fi"]
 
-  spec.summary       = %q{Runs Cabybara tests.}
-  spec.description   = %q{Alternative way to run Capybara with out without rspec}
+  spec.summary       = %q{Goes around your site.}
+  spec.description   = %q{An alternative way to run Capybara with out without rspec}
   spec.homepage      = "http://github.com/matti/manki"
   spec.license       = "MIT"
 
