@@ -38,4 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "ZenTest", "~> 4.11"
 
   spec.add_development_dependency "simplecov", "~> 0.11"
+
+  spec.add_development_dependency "sinatra", "~> 1.4"
+  spec.add_development_dependency "kommando", "~> 0.0"
 end

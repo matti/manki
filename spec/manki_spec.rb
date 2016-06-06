@@ -14,7 +14,7 @@ describe Manki do
   describe 'instance' do
     before(:each) do
       @m = Manki.new({
-        host: 'http://example.com'
+        host: 'http://localhost:4567'
       })
     end
 
@@ -25,14 +25,14 @@ describe Manki do
 
       it 'sets html' do
         @m.get "/"
-        expect(@m.html).to include "<h1>Example Domain"
+        expect(@m.html).to include "<h1>MankiWorld</h1>"
       end
     end
 
     describe 'html' do
       before(:each) do
         @m = Manki.new({
-          host: 'http://example.com'
+          host: 'http://localhost:4567'
         })
       end
 
