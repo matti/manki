@@ -1,4 +1,4 @@
-require "manki/version"
+require_relative "manki/version"
 
 class Manki
 end
