@@ -6,7 +6,9 @@ require 'capybara/poltergeist'
 require_relative "manki/version"
 
 class Manki
-  include Capybara::DSL
+  module Mankibara
+    extend Capybara::DSL
+  end
 
   def initialize(opts)
     Capybara.app_host = opts[:host]
@@ -17,12 +19,16 @@ class Manki
   end
 
   def get(path)
-    visit path
+    Mankibara.visit path
     @performed = true
+  end
+
+  def click(what)
+    Mankibara.click_on what
   end
 
   def html
     return nil unless @performed
-    page.html
+    Mankibara.page.html
   end
 end

@@ -40,5 +40,20 @@ describe Manki do
         expect(@m.html).to be(nil)
       end
     end
+
+    describe 'click' do
+      before(:each) do
+        @m = Manki.new({
+          host: 'http://localhost:4567'
+        })
+
+        @m.get "/"
+      end
+
+      it 'clicks' do
+        @m.click "Go to other"
+        expect(@m.html).to include "<h1>Other</h1>"
+      end
+    end
   end
 end
