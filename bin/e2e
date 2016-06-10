@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+require "kommando"
+
+examples = Dir.glob("./examples/*.rb")
+
+for example in examples do
+  k = Kommando.new "ruby $EXAMPLE", {
+    env: {
+      EXAMPLE: example
+    }
+  }
+  k.run
+
+  unless k.code == 0
+    puts k.out
+    raise "Example #{example} did not exit cleanly"
+  end
+end
+
+puts "all good."
