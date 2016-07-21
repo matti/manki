@@ -3,32 +3,53 @@ require 'capybara/dsl'
 
 require 'capybara/poltergeist'
 
+require 'active_support/all'
+
 require_relative "manki/version"
+require_relative "manki/session"
+require_relative "manki/window"
+require_relative "manki/element"
 
 class Manki
-  module Mankibara
-    extend Capybara::DSL
+  def initialize(driver: :poltergeist)
+    @session = Session.new driver: driver
   end
 
-  def initialize(opts)
-    Capybara.app_host = opts[:host]
-    Capybara.current_driver = :poltergeist
-    Capybara.reset_session!
+  def __session; @session; end
 
-    @performed = false
-  end
-
-  def get(path)
-    Mankibara.visit path
-    @performed = true
-  end
-
-  def click(what)
-    Mankibara.click_on what
+  def location l
+    window.location l
   end
 
   def html
-    return nil unless @performed
-    Mankibara.page.html
+    window.html
+  end
+
+  def text
+    window.text
+  end
+
+  def find opts
+    window.find opts
+  end
+
+  def click opts
+    window.click opts
+  end
+
+  def eval js
+    window.eval js
+  end
+
+  def history
+    window.history
+  end
+
+  def windows
+    @session.windows
+  end
+
+  def window
+    @session.active_window
   end
 end
