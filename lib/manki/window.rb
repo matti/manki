@@ -1,13 +1,110 @@
 class Manki::Window
 
-  attr_reader :name
-
   def initialize(capybara_window, name:)
     @capybara_window = capybara_window
     @name = name
 
+    @base_uri = nil
     @history = []
   end
+
+  module Attributes
+    def html
+      if @history.empty?
+        "" # by default it's about blanks <html><body></body></html>
+      else
+        @capybara_window.session.html
+      end
+    end
+
+    def text
+      @capybara_window.session.text
+    end
+
+    def history
+      @history
+    end
+  end
+
+  module Methods
+    def location uri_or_path_string
+      t = Manki::Transition.new
+      t.start!
+
+      uri = URI.parse uri_or_path_string
+
+      if uri.scheme
+        if ["http", "https"].include? uri.scheme
+          @base_uri = URI.parse "#{uri.scheme}://#{uri.host}"
+          @base_uri.port = uri.port
+        else
+          raise Manki::Error::SchemeNotSupported, "Scheme '#{uri.scheme}' not supported."
+        end
+      else
+        unless @base_uri
+          raise Manki::Error::Navigation
+        end
+      end
+
+      full_uri = @base_uri.merge uri
+      t.uri = full_uri
+
+      begin
+        # {"status"=>"success"}
+        status = @capybara_window.session.driver.visit full_uri.to_s
+        t.performed = (status["status"] == "success")
+        t.code = @capybara_window.session.driver.status_code
+      rescue => ex
+        if ex.class == Capybara::Poltergeist::StatusFailError
+          raise Manki::Error::HostNotFound, "Host '#{full_uri.host}' not found."
+        else
+          raise ex
+        end
+      end
+
+      @history << full_uri.to_s
+
+      t.stop!
+      return t
+    end
+
+    def find css: nil
+      capybara_element = @capybara_window.session.find css
+      Manki::Element.new capybara_element
+    end
+
+    def click opts
+      window.click opts
+    end
+
+    def eval js
+      window.eval js
+    end
+
+    def click css: nil
+      element = find css: nil
+      element.click
+    end
+
+    def eval js
+      result = @capybara_window.session.evaluate_script js
+    end
+
+    def back
+      @capybara_window.session.go_back
+    end
+
+    def forward
+      @capybara_window.session.go_back
+    end
+  end
+
+  include Methods
+  include Attributes
+
+  attr_reader :name
+
+
 
   def __capybara_window; @capybara_window; end
 
@@ -25,49 +122,6 @@ class Manki::Window
 
   def activate!
     @capybara_window.session.switch_to_window @capybara_window
-  end
-
-  def location uri_or_partial_uri
-    parsed_uri = URI.parse uri_or_partial_uri
-    if parsed_uri.scheme == "http"
-      Capybara.app_host = "#{parsed_uri.scheme}://#{parsed_uri.host}:#{parsed_uri.port}#{parsed_uri.path}"
-    end
-
-    @capybara_window.session.visit parsed_uri.path
-    puts @history.inspect
-    @history << 1 #@capybara_window.session.current_url
-    puts @history.inspect
-
-  end
-
-  def html
-    @capybara_window.session.html
-  end
-
-  def text
-    @capybara_window.session.text
-  end
-
-  def find css: nil
-    capybara_element = @capybara_window.session.find css
-    Manki::Element.new capybara_element
-  end
-
-  def click css: nil
-    element = find css: nil
-    element.click
-  end
-
-  def eval js
-    result = @capybara_window.session.evaluate_script js
-  end
-
-  def history
-    @history
-  end
-
-  def back
-    @capybara_window.session.go_back
   end
 
   def close

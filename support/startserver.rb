@@ -1,7 +1,4 @@
 require 'kommando'
-k = Kommando.new "ruby support/mankiserver.rb", {
+k = Kommando.run_async "ruby support/mankiserver.rb", {
   output: "log/mankiserver.log"
 }
-Thread.new do
-  k.run
-end

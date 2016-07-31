@@ -8,48 +8,28 @@ require 'active_support/all'
 require_relative "manki/version"
 require_relative "manki/session"
 require_relative "manki/window"
+require_relative "manki/transition"
 require_relative "manki/element"
 
 class Manki
+  module Error
+    class Base < StandardError; end
+    class Navigation < Base; end
+    class SchemeNotSupported < Base; end
+    class HostNotFound < Base; end
+  end
+
   def initialize(driver: :poltergeist)
     @session = Session.new driver: driver
   end
 
+  def windows; @session.windows; end
+  def window; @session.active_window; end
+  def html; window.html; end
+  def text; window.text; end
   def __session; @session; end
 
-  def location l
-    window.location l
-  end
-
-  def html
-    window.html
-  end
-
-  def text
-    window.text
-  end
-
-  def find opts
-    window.find opts
-  end
-
-  def click opts
-    window.click opts
-  end
-
-  def eval js
-    window.eval js
-  end
-
-  def history
-    window.history
-  end
-
-  def windows
-    @session.windows
-  end
-
-  def window
-    @session.active_window
+  def location uri_or_partial_uri
+    window.location uri_or_partial_uri
   end
 end
