@@ -1,6 +1,12 @@
 class Manki::Transition
   attr_reader :uri, :code
   attr_reader :started_at, :stopped_at
+  attr_reader :screenshot
+
+  def screenshot=(path)
+    raise if @screenshot
+    @screenshot = path
+  end
 
   def performed?
     @performed

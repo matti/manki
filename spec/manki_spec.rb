@@ -1,5 +1,102 @@
 require 'spec_helper'
 
+describe Manki do
+  describe "actions" do
+    before :all do
+      @m = Manki.new
+    end
+
+    it "is initially empty" do
+      @m.actions == []
+    end
+
+    describe "when navigating" do
+      before :each do
+        @m = Manki.new
+        @m.location "http://localhost:4567"
+      end
+
+      it "has one action" do
+        expect(@m.actions.size).to eq 1
+        expect(@m.actions.first).to be_a Manki::Action
+      end
+
+      it "has two actions" do
+        @m.location "/other.html"
+
+        expect(@m.actions.size).to eq 2
+        expect(@m.actions.first).to be_a Manki::Action
+        expect(@m.actions.second).to be_a Manki::Action
+      end
+    end
+  end
+end
+
+describe Manki do
+
+  describe Manki::Action::Location do
+    before :all do
+      m = Manki.new
+      m.location "http://localhost:4567"
+
+      @a = m.actions.first
+    end
+
+    it "is Manki::Action::Location" do
+      expect(@a.class.to_s).to eq "Manki::Action::Location"
+    end
+
+    it 'is success' do
+      expect(@a.success).to be true
+    end
+
+    it 'has started_at and stopped_at' do
+      expect(@a.started_at).to be_a Time
+      expect(@a.stopped_at).to be_a Time
+    end
+
+    it 'has duration' do
+      expect(@a.duration).to eq (@a.stopped_at - @a.started_at)
+    end
+
+    describe 'before & after' do
+      it "have instances" do
+        expect(@a.before).to be_a Manki::Action::Before
+        expect(@a.after).to be_a Manki::Action::After
+      end
+
+      it 'have uri set' do
+        expect(@a.before.uri).to be_a URI
+        expect(@a.before.uri.to_s).to eq "about:blank"
+
+        expect(@a.after.uri).to be_a URI
+        expect(@a.after.uri.to_s).to eq "http://localhost:4567/"
+      end
+
+      describe 'code' do
+        before :all do
+          @m = Manki.new
+          @m.location 'http://localhost:4567'
+        end
+
+        it 'have codes nil and 200 after one navigation' do
+          expect(@m.actions.first.before.code).to eq nil
+          expect(@m.actions.first.after.code).to eq 200
+        end
+
+        it 'have codes 200 and 404 after second navigation' do
+          @m.location "/404"
+          expect(@m.actions.second.before.code).to eq 200
+          expect(@m.actions.second.after.code).to eq 404
+        end
+      end
+
+      xit 'has screenshot'
+    end
+
+  end
+end
+
 describe Manki::Transition do
   before :all do
     m = Manki.new
@@ -29,6 +126,10 @@ describe Manki::Transition do
 
   it 'has duration' do
     expect(@t.duration).to eq (@t.stopped_at - @t.started_at)
+  end
+
+  xit 'has screenshot' do
+    expect(@t.screenshot).to eq "./tmp/lel.png"
   end
 end
 

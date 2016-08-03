@@ -1,6 +1,9 @@
+require "tempfile"
+
 class Manki::Window
 
-  def initialize(capybara_window, name:)
+  def initialize(session:, capybara_window:, name:)
+    @session = session
     @capybara_window = capybara_window
     @name = name
 
@@ -24,10 +27,28 @@ class Manki::Window
     def history
       @history
     end
+
+    def code
+      @capybara_window.session.driver.status_code
+    end
   end
 
   module Methods
+    def current_uri
+      URI.parse(@capybara_window.session.driver.current_url)
+    end
+
+    def create_action(klass)
+      a = klass.new({
+        current_uri: current_uri,
+        code: code
+      })
+    end
+
     def location uri_or_path_string
+      a = create_action Manki::Action::Location
+      a.start!
+
       t = Manki::Transition.new
       t.start!
 
@@ -53,7 +74,11 @@ class Manki::Window
         # {"status"=>"success"}
         status = @capybara_window.session.driver.visit full_uri.to_s
         t.performed = (status["status"] == "success")
-        t.code = @capybara_window.session.driver.status_code
+        t.code = code
+
+        #TODO: woot
+        @capybara_window.session.save_screenshot("./shot.pdf")
+        t.screenshot = "f"
       rescue => ex
         if ex.class == Capybara::Poltergeist::StatusFailError
           raise Manki::Error::HostNotFound, "Host '#{full_uri.host}' not found."
@@ -65,6 +90,14 @@ class Manki::Window
       @history << full_uri.to_s
 
       t.stop!
+
+      a.stop!({
+        current_uri: current_uri,
+        code: code
+      })
+
+      @session.actions << a
+
       return t
     end
 

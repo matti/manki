@@ -1,10 +1,8 @@
 require './lib/manki'
 require './support/startserver.rb'
 
-m = Manki.new {
-  host: "http://localhost:4567"
-}
+m = Manki.new
 
-m.get "/"
-m.click "Go to other"
-puts m.html
+m.location "http://localhost:4567/"
+link = m.find(css: "a").find(text: "Go to other")
+link.click

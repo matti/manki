@@ -4,9 +4,10 @@ require './support/startserver.rb'
 m1 = Manki.new driver: :selenium
 m2 = Manki.new
 
-m1.location "http://localhost:4567"
-m2.location "http://localhost:4567"
-m2.location "/other.html"
+mankis = Manki::Multi.new mankis: [m1,m2]
+
+transitions = mankis.location "http://localhost:4567"
+htmls = mankis.html
 
 puts m1.html
 other_link = m1.find css: "a"

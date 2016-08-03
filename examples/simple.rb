@@ -1,8 +1,7 @@
 require './lib/manki'
+require './support/startserver'
 
-m = Manki.new {
-  host: "http://www.example.com"
-}
+m = Manki.new
 
-m.get "/"
+m.location "http://localhost:4567"
 puts m.html

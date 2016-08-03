@@ -8,9 +8,15 @@ class Manki::Session
     #TODO: race?
     @capybara_session = Capybara.current_session # registers to session_pool and returns
     # session_pool["#{current_driver}:#{session_name}:#{app.object_id}"] ||= Capybara::Session.new(current_driver, app)
+
+    @actions = []
   end
 
   def __capybara_session; @capybara_session; end
+
+  def actions
+    @actions
+  end
 
   def windows
     @capybara_windows.delete_if do |capybara_window, window|
@@ -18,7 +24,11 @@ class Manki::Session
     end
 
     @capybara_session.windows.each do |capybara_window|
-      @capybara_windows[capybara_window] ||= Manki::Window.new capybara_window, name: (@window_sequence += 1).to_s
+      @capybara_windows[capybara_window] ||= Manki::Window.new({
+        session: self,
+        capybara_window: capybara_window,
+        name: (@window_sequence += 1).to_s
+      })
     end
 
     windows_by_name = {}

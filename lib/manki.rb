@@ -10,6 +10,7 @@ require_relative "manki/session"
 require_relative "manki/window"
 require_relative "manki/transition"
 require_relative "manki/element"
+require_relative "manki/action"
 
 class Manki
   module Error
@@ -23,6 +24,7 @@ class Manki
     @session = Session.new driver: driver
   end
 
+  def actions; @session.actions; end
   def windows; @session.windows; end
   def window; @session.active_window; end
   def html; window.html; end
